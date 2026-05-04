@@ -1,0 +1,9 @@
+rootProject.name = 'lms'
+include("config")
+include("registry")
+include("gateway")
+include("property")
+include("lease")
+include("payment")
+include("auth-service")
+include("notification")

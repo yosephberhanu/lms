@@ -1,0 +1,67 @@
+<div class="row mb-3">
+  <div class="col-sm-6">
+    <h1 class="m-0">Properties</h1>
+  </div>
+  <div class="col-sm-6 text-right">
+    <a routerLink="/properties/new" class="btn btn-primary"><i class="fas fa-plus mr-1"></i> New property</a>
+  </div>
+</div>
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+<div class="card card-outline card-primary">
+  <div class="card-header">
+    <h3 class="card-title">Filters</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-3">
+        <label>
+          Search
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="propertySearch"
+            placeholder="Name or address"
+            [ngModelOptions]="{ standalone: true }"
+          />
+        </label>
+      </div>
+      <div class="col-md-3">
+        <label>
+          City
+          <input type="text" class="form-control" [(ngModel)]="cityFilter" placeholder="City" [ngModelOptions]="{ standalone: true }" />
+        </label>
+      </div>
+      <div class="col-md-3">
+        <label>
+          Type
+          <select class="form-control" [(ngModel)]="selectedTypeFilter" [ngModelOptions]="{ standalone: true }">
+            <option value="">All</option>
+            @for (type of propertyTypes; track type) {
+              <option [value]="type">{{ type | titlecase }}</option>
+            }
+          </select>
+        </label>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button type="button" class="btn btn-secondary mr-2" (click)="load()" [disabled]="loading">Apply</button>
+        <button type="button" class="btn btn-default" (click)="clearFilters()" [disabled]="loading">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (!loading) {
+  <div class="card">
+    <div class="card-body p-0">
+      <table [id]="tableId" class="table table-striped table-bordered w-100"></table>
+    </div>
+  </div>
+}

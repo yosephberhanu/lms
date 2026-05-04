@@ -1,0 +1,57 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+lms:
+  security:
+    enabled: ${LMS_SECURITY_ENABLED:false}
+
+spring:
+  application:
+    name: payment
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/payment_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    url: ../v3/api-docs
+    config-url: ../v3/api-docs/swagger-config
+    use-root-path: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+payment:
+  lease-service:
+    base-url: ${PAYMENT_LEASE_SERVICE_BASE_URL:http://localhost:8082}
+  stripe:
+    # Prefer payment-scoped vars, but fall back to repo-wide STRIPE_* vars.
+    secret-key: ${PAYMENT_STRIPE_SECRET_KEY:${STRIPE_SECRET_KEY:}}
+    webhook-secret: ${PAYMENT_STRIPE_WEBHOOK_SECRET:${STRIPE_WEBHOOK_SECRET:}}
+    currency: ${PAYMENT_STRIPE_CURRENCY:${STRIPE_CURRENCY:usd}}
+    success-url-template: ${PAYMENT_STRIPE_SUCCESS_URL_TEMPLATE:${STRIPE_SUCCESS_URL_TEMPLATE:http://localhost/tenant/leases/{leaseId}?payment=success}}
+    cancel-url-template: ${PAYMENT_STRIPE_CANCEL_URL_TEMPLATE:${STRIPE_CANCEL_URL_TEMPLATE:http://localhost/tenant/leases/{leaseId}?payment=cancel}}
+

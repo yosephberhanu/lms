@@ -1,0 +1,144 @@
+{
+  "realm": "lms",
+  "enabled": true,
+  "displayName": "Lease Management",
+  "loginTheme": "lms",
+  "sslRequired": "NONE",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "roles": {
+    "realm": [
+      { "name": "lms-staff", "description": "Staff / manager UI" },
+      { "name": "lms-user", "description": "General authenticated user (owner/tenant portals)" },
+      { "name": "lms-admin", "description": "Keycloak user admin (admin UI + /api/admin)" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "lms-spa",
+      "name": "LMS Angular apps",
+      "enabled": true,
+      "publicClient": true,
+      "fullScopeAllowed": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "protocolMappers": [
+        {
+          "name": "lms-party-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "lms_party_id",
+            "claim.name": "lms_party_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true",
+            "multivalued": "false"
+          }
+        },
+        {
+          "name": "lms-tenant-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "lms_tenant_id",
+            "claim.name": "lms_tenant_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true",
+            "multivalued": "false"
+          }
+        }
+      ],
+      "redirectUris": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "http://localhost:81/*",
+        "http://localhost:82/*",
+        "http://localhost:83/*",
+        "http://localhost:4200/*",
+        "http://localhost:4201/*",
+        "http://localhost:4202/*",
+        "http://localhost:4203/*",
+        "http://localhost/admin/*",
+        "http://127.0.0.1:4200/*"
+      ],
+      "webOrigins": [
+        "http://localhost",
+        "http://127.0.0.1",
+        "http://localhost:81",
+        "http://localhost:82",
+        "http://localhost:83",
+        "http://localhost:4200",
+        "http://localhost:4201",
+        "http://localhost:4202",
+        "http://localhost:4203",
+        "http://localhost",
+        "http://127.0.0.1:4200"
+      ],
+      "defaultClientScopes": ["web-origins", "acr", "profile", "roles", "email"],
+      "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
+    }
+  ],
+  "users": [
+    {
+      "username": "manager",
+      "enabled": true,
+      "email": "lms-manager@yoseph.et",
+      "emailVerified": true,
+      "firstName": "Branden",
+      "lastName": "Burke",
+      "credentials": [{ "type": "password", "value": "manager", "temporary": false }],
+      "realmRoles": ["lms-staff"]
+    },
+    {
+      "username": "owner",
+      "enabled": true,
+      "email": "lms-owner@yoseph.et",
+      "emailVerified": true,
+      "firstName": "Caleb",
+      "lastName": "Baker",
+      "credentials": [{ "type": "password", "value": "owner", "temporary": false }],
+      "realmRoles": ["lms-user"],
+      "attributes": {
+        "lms_party_id": ["user-1001"]
+      }
+    },
+    {
+      "username": "tenant",
+      "enabled": true,
+      "email": "lms-tenant@yoseph.et",
+      "emailVerified": true,
+      "firstName": "Tracy",
+      "lastName": "Mason",
+      "credentials": [{ "type": "password", "value": "tenant", "temporary": false }],
+      "realmRoles": ["lms-user"],
+      "attributes": {
+        "lms_tenant_id": ["1"]
+      }
+    },
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "lms-admin@yoseph.et",
+      "emailVerified": true,
+      "firstName": "John",
+      "lastName": "David",
+      "credentials": [{ "type": "password", "value": "admin", "temporary": false }],
+      "realmRoles": ["lms-admin"]
+    }
+  ]
+}

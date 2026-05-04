@@ -1,0 +1,65 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+lms:
+  security:
+    enabled: ${LMS_SECURITY_ENABLED:false}
+
+spring:
+  application:
+    name: lease
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/lease_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    # Relative to the Swagger UI page so behind the gateway the browser loads
+    # /lease/v3/api-docs instead of /v3/api-docs (which routes to Property).
+    url: ../v3/api-docs
+    config-url: ../v3/api-docs/swagger-config
+    use-root-path: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+lease:
+  property-service:
+    base-url: ${LEASE_PROPERTY_SERVICE_BASE_URL:http://localhost:8080}
+  user-service:
+    base-url: ${LEASE_USER_SERVICE_BASE_URL:}
+  payment-service:
+    base-url: ${LEASE_PAYMENT_SERVICE_BASE_URL:http://localhost:8083}
+
+  attachments:
+    s3:
+      endpoint: ${LEASE_ATTACHMENTS_S3_ENDPOINT:http://localhost:9000}
+      access-key: ${LEASE_ATTACHMENTS_S3_ACCESS_KEY:minioadmin}
+      secret-key: ${LEASE_ATTACHMENTS_S3_SECRET_KEY:change_me}
+      bucket: ${LEASE_ATTACHMENTS_S3_BUCKET:lms-lease-attachments}
+
+# JWT: when LMS_SECURITY_ENABLED=true, set SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+# (see docker-compose) to Keycloak JWKS, e.g. http://keycloak:8080/realms/lms/protocol/openid-connect/certs

@@ -1,0 +1,102 @@
+<div class="row mb-3">
+  <div class="col">
+    <h1 class="m-0">My profile</h1>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (successMessage) {
+  <div class="alert alert-success">{{ successMessage }}</div>
+}
+
+@if (!loading) {
+  <div class="card card-outline card-primary">
+    <div class="card-body">
+      <div class="form-group">
+        <label>Username</label>
+        <input class="form-control" [value]="profile?.username || ''" disabled />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>First name</label>
+          <input class="form-control" [(ngModel)]="draft.firstName" />
+        </div>
+        <div class="form-group col-md-6">
+          <label>Last name</label>
+          <input class="form-control" [(ngModel)]="draft.lastName" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>Email</label>
+          <input
+            class="form-control"
+            type="email"
+            [(ngModel)]="draft.email"
+            (ngModelChange)="!($event || '').trim() && (draft.notifyEmail = false)"
+          />
+        </div>
+        <div class="form-group col-md-6">
+          <label>Phone</label>
+          <input class="form-control" [(ngModel)]="draft.phone" (ngModelChange)="!($event || '').trim() && (draft.notifySms = false)" />
+        </div>
+      </div>
+
+      <hr />
+      <h5 class="mb-3">Communication preferences</h5>
+      <div class="form-group mb-2">
+        <div class="custom-control custom-checkbox">
+          <input class="custom-control-input" id="pref-inapp" type="checkbox" [checked]="true" disabled />
+          <label class="custom-control-label" for="pref-inapp">In-app notifications (always on)</label>
+        </div>
+      </div>
+      <div class="form-group mb-2">
+        <div class="custom-control custom-checkbox">
+          <input
+            class="custom-control-input"
+            id="pref-email"
+            type="checkbox"
+            [(ngModel)]="draft.notifyEmail"
+            [disabled]="saving || !(draft.email || '').trim()"
+          />
+          <label class="custom-control-label" for="pref-email">Email</label>
+        </div>
+        @if (!(draft.email || '').trim()) {
+          <small class="form-text text-muted">Add an email address above to enable email notifications.</small>
+        }
+      </div>
+      <div class="form-group mb-3">
+        <div class="custom-control custom-checkbox">
+          <input
+            class="custom-control-input"
+            id="pref-sms"
+            type="checkbox"
+            [(ngModel)]="draft.notifySms"
+            [disabled]="saving || !(draft.phone || '').trim()"
+          />
+          <label class="custom-control-label" for="pref-sms">SMS</label>
+        </div>
+        @if (!(draft.phone || '').trim()) {
+          <small class="form-text text-muted">Add a phone number above to enable SMS notifications.</small>
+        }
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-outline-secondary mr-2" type="button" [disabled]="saving" (click)="load()">Reset</button>
+        <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+          {{ saving ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

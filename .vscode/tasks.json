@@ -1,0 +1,97 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "LMS: Gradle clean bootJar (all services)",
+      "type": "shell",
+      "command": "./gradlew clean bootJar --no-daemon",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "LMS: Docker Compose - down",
+      "type": "shell",
+      "command": "docker compose down",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "LMS: Docker Compose - build (no cache)",
+      "type": "shell",
+      "command": "docker compose build --no-cache",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "LMS: Docker Compose - up (detached)",
+      "type": "shell",
+      "command": "docker compose up -d --force-recreate",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },{
+      "label": "LMS: Docker Compose - up (detached) dev",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --force-recreate",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "LMS: Full stack",
+      "dependsOn": [
+        "LMS: Gradle clean bootJar (all services)",
+        "LMS: Docker Compose - down",
+        "LMS: Docker Compose - build (no cache)",
+        "LMS: Docker Compose - up (detached)"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "LMS: Full stack - dev",
+      "dependsOn": [
+        "LMS: Gradle clean bootJar (all services)",
+        "LMS: Docker Compose - down",
+        "LMS: Docker Compose - build (no cache)",
+        "LMS: Docker Compose - up (detached) dev"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    }
+  ]
+}

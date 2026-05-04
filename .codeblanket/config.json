@@ -1,0 +1,36 @@
+{
+  "settingsEnabled": false,
+  "editingEnabled": true,
+  "chatEnabled": false,
+  "codeEnabled": true,
+  "describeEnabled": true,
+  "walkthroughEnabled": false,
+  "legendsEnabled": true,
+  "layers": {
+    "test-coverage": false,
+    "change-frequency": false,
+    "contributors": false,
+    "complexity": false
+  },
+  "loading": false,
+  "fullscreenToggleEnabled": false,
+  "doubleClickNavigationEnabled": true,
+  "manualNavigationEnabled": true,
+  "interactionLoggingEnabled": true,
+  "interactionLogging": {
+    "enabled": true,
+    "console": false,
+    "destination": "file",
+    "filePath": "logs/canvas.jsonl"
+  },
+  "ideInteractionLogging": {
+    "enabled": true,
+    "console": false,
+    "destination": "file",
+    "filePath": "logs/ide.jsonl",
+    "events": ["activeEditor", "documentOpen", "documentSave", "diagramsTree", "selectionChanged","windowState"]
+  },
+  
+  "theme": "auto",
+  "contentId": "content"
+}

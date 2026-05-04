@@ -1,0 +1,43 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+lms:
+  security:
+    enabled: ${LMS_SECURITY_ENABLED:false}
+
+spring:
+  application:
+    name: property
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/property_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    use-root-path: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# JWT: when LMS_SECURITY_ENABLED=true, set SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+# (see docker-compose) to Keycloak JWKS, e.g. http://keycloak:8080/realms/lms/protocol/openid-connect/certs

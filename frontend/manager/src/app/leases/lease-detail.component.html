@@ -1,0 +1,166 @@
+<div class="row mb-3">
+  <div class="col-sm-6">
+    <h1 class="m-0">Lease</h1>
+  </div>
+  <div class="col-sm-6 text-right">
+    <a routerLink="/leases" class="btn btn-default">Back to list</a>
+    @if (lease && canEdit) {
+      <a [routerLink]="['/leases', lease.id, 'edit']" class="btn btn-warning ml-2">Edit</a>
+    }
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (!loading && lease) {
+  <div class="card card-outline card-warning">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+      <h3 class="card-title mb-0">
+        Lease #{{ lease.id }} — {{ formatEnum(lease.status) }}
+      </h3>
+      <div class="mt-2 mt-md-0">
+        @if (canSubmit) {
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary mr-1"
+            [disabled]="actionInFlight"
+            (click)="submitForApproval()"
+          >
+            Submit for approval
+          </button>
+        }
+        @if (canTerminate) {
+          <button type="button" class="btn btn-sm btn-danger" [disabled]="actionInFlight" (click)="terminate()">
+            Terminate
+          </button>
+        }
+      </div>
+    </div>
+    <div class="card-body">
+      @if (lease.status === 'PENDING_APPROVAL') {
+        <div class="alert alert-light border mb-3">
+          <strong>Dual approval:</strong> this lease becomes active only after both the owner and the tenant have
+          approved (in the owner and tenant apps). Approvals can be recorded in any order.
+          @if (lease.ownerApprovedAt) {
+            <span class="badge badge-success ml-1">Owner approved</span>
+          }
+          @if (lease.tenantApprovedAt) {
+            <span class="badge badge-info ml-1">Tenant approved</span>
+          }
+        </div>
+      }
+
+      <dl class="row">
+        <dt class="col-sm-3">Property</dt>
+        <dd class="col-sm-9">{{ lease.propertyNameSnapshot || ('Property #' + lease.propertyId) }}</dd>
+        <dt class="col-sm-3">Tenant</dt>
+        <dd class="col-sm-9">{{ lease.tenantNameSnapshot || lease.tenant?.displayName || ('Tenant #' + lease.tenantId) }}</dd>
+        <dt class="col-sm-3">Monthly rent</dt>
+        <dd class="col-sm-9">{{ lease.monthlyRent | currency }}</dd>
+        <dt class="col-sm-3">Start</dt>
+        <dd class="col-sm-9">{{ lease.startDate }}</dd>
+        <dt class="col-sm-3">End</dt>
+        <dd class="col-sm-9">{{ lease.endDate }}</dd>
+        <dt class="col-sm-3">Deposit</dt>
+        <dd class="col-sm-9">{{ lease.depositAmount != null ? (lease.depositAmount | currency) : '—' }}</dd>
+        <dt class="col-sm-3">Payment schedule</dt>
+        <dd class="col-sm-9">{{ lease.paymentSchedule || '—' }}</dd>
+        <dt class="col-sm-3">Owner ID</dt>
+        <dd class="col-sm-9">{{ lease.ownerId || '—' }}</dd>
+        @if (lease.ownerApprovedAt) {
+          <dt class="col-sm-3">Owner approved at</dt>
+          <dd class="col-sm-9">{{ lease.ownerApprovedAt | date: 'medium' }}</dd>
+        }
+        @if (lease.tenantApprovedAt) {
+          <dt class="col-sm-3">Tenant approved at</dt>
+          <dd class="col-sm-9">{{ lease.tenantApprovedAt | date: 'medium' }}</dd>
+        }
+        <dt class="col-sm-3">Updated</dt>
+        <dd class="col-sm-9">{{ lease.updatedAt | date: 'medium' }}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card card-outline card-secondary mt-3">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+      <h3 class="card-title mb-0">Attachments</h3>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="loadAttachments()">Refresh</button>
+    </div>
+    <div class="card-body">
+      @if (attachmentsError) {
+        <div class="alert alert-danger">{{ attachmentsError }}</div>
+      }
+
+      @if (!attachments.length) {
+        <p class="text-muted mb-0">No attachments.</p>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered mb-0">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Uploaded</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of attachments; track a.id) {
+                <tr>
+                  <td>{{ a.originalFileName }}</td>
+                  <td>{{ a.uploadedAt | date: 'medium' }}</td>
+                  <td class="text-right">
+                    <button type="button" class="btn btn-xs btn-outline-primary" (click)="viewAttachment(a)">
+                      View
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (previewOpen) {
+    <div class="modal fade show" style="display: block" tabindex="-1" role="dialog" aria-modal="true">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ previewTitle || 'Attachment' }}</h5>
+            <button type="button" class="close" aria-label="Close" (click)="closePreview()">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body p-0" style="min-height: 70vh">
+            @if (previewError) {
+              <div class="p-3">
+                <div class="alert alert-danger mb-0">{{ previewError }}</div>
+              </div>
+            } @else if (previewLoading) {
+              <div class="p-3">
+                <div class="alert alert-info mb-0"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+              </div>
+            } @else if (previewUrl) {
+              <iframe [src]="previewUrl | safeUrl" style="width: 100%; height: 70vh; border: 0"></iframe>
+            } @else {
+              <div class="p-3">
+                <p class="text-muted mb-0">No preview available.</p>
+              </div>
+            }
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closePreview()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+  }
+}

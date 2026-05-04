@@ -1,0 +1,19 @@
+lms:
+  security:
+    enabled: false
+
+spring:
+  main:
+    banner-mode: "off"
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

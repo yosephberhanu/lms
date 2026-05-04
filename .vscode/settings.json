@@ -1,0 +1,11 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.import.gradle.enabled": true,
+    "java.import.gradle.wrapper.enabled": true,
+    "files.exclude": {
+        // "**/.codeblanket": true
+    },
+    // "codeblanket.apiBaseUrl": "http://localhost:3002",
+    // "codebclealanket.configId": "dev_vscode"
+}

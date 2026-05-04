@@ -1,0 +1,45 @@
+plugins {
+  // Root project is an aggregator: keep it lightweight and push configuration to subprojects.
+  // JDK 24 needs Gradle 8.14+ (8.13 and older fail with class file v68). Use ./gradlew (9.4.1); avoid a global Gradle 8.x as "Gradle home" in the IDE.
+  id 'base'
+
+  // Declare plugin versions once; subprojects apply them as needed.
+  id 'org.springframework.boot' version '4.0.5' apply false
+  id 'io.spring.dependency-management' version '1.1.7' apply false
+}
+
+allprojects {
+  group = 'et.yoseph'
+  version = '0.0.1-SNAPSHOT'
+}
+
+ext {
+  // Spring Boot 4 aligns with Spring Cloud 2025.x line.
+  // Use the Boot 4 compatible release train (2025.1.x).
+  set('springCloudVersion', "2025.1.1")
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'io.spring.dependency-management'
+
+  repositories {
+    mavenCentral()
+  }
+
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(21)
+    }
+  }
+
+  dependencyManagement {
+    imports {
+      mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+  }
+
+  tasks.named('test') {
+    useJUnitPlatform()
+  }
+}

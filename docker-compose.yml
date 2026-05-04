@@ -1,0 +1,337 @@
+services:
+  postgres:
+    build:
+      context: ./backend/infra/postgres
+      dockerfile: Dockerfile
+    container_name: lms-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lms-net
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    container_name: lms-keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      # Public URLs in OIDC metadata when accessed via nginx on port 80 (same origin as SPAs)
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT: "false"
+      KC_PROXY_HEADERS: xforwarded
+    volumes:
+      - ./backend/infra/keycloak/lms-realm.json:/opt/keycloak/data/import/lms-realm.json:ro
+      - ./backend/infra/keycloak/themes:/opt/keycloak/themes:ro
+    ports:
+      - "8180:8080"
+    networks:
+      - lms-net
+
+  # mongo:
+  #   build:
+  #     context: ./backend/infra/mongo
+  #     dockerfile: Dockerfile
+  #   container_name: lms-mongo
+  #   restart: unless-stopped
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+  #   volumes:
+  #     - mongo_data:/data/db
+  #   networks:
+  #     - lms-net
+
+  minio:
+    build:
+      context: ./backend/infra/minio
+      dockerfile: Dockerfile
+    container_name: lms-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - lms-net
+
+  registry:
+    build: ./backend/registry
+    image: yosephberhanu/lms-registry:latest
+    container_name: lms-registry
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config:
+    build: ./backend/config
+    image: yosephberhanu/lms-config:latest
+    container_name: lms-config
+    depends_on:
+      registry:
+        condition: service_healthy
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  property:
+    build: ./backend/property
+    image: yosephberhanu/lms-property:latest
+    container_name: lms-property
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/property_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      LMS_SECURITY_ENABLED: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/lms/protocol/openid-connect/certs
+    depends_on:
+      postgres:
+        condition: service_started
+      registry:
+        condition: service_healthy
+      config:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  lease:
+    build: ./backend/lease
+    image: yosephberhanu/lms-lease:latest
+    container_name: lms-lease
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lease_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      LEASE_PROPERTY_SERVICE_BASE_URL: http://property:8080
+      LEASE_PAYMENT_SERVICE_BASE_URL: http://payment:8080
+      LMS_SECURITY_ENABLED: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/lms/protocol/openid-connect/certs
+      # Lease attachments (MinIO/S3) - use container hostname, not localhost
+      LEASE_ATTACHMENTS_S3_ENDPOINT: http://minio:9000
+      LEASE_ATTACHMENTS_S3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      LEASE_ATTACHMENTS_S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      LEASE_ATTACHMENTS_S3_BUCKET: lms-lease-attachments
+    depends_on:
+      postgres:
+        condition: service_started
+      registry:
+        condition: service_healthy
+      property:
+        condition: service_started
+      minio:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  payment:
+    build: ./backend/payment
+    image: yosephberhanu/lms-payment:latest
+    container_name: lms-payment
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      PAYMENT_LEASE_SERVICE_BASE_URL: http://lease:8080
+      LMS_SECURITY_ENABLED: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/lms/protocol/openid-connect/certs
+      # Accept either payment-scoped vars or the repo-wide STRIPE_* vars from .env
+      PAYMENT_STRIPE_SECRET_KEY: ${PAYMENT_STRIPE_SECRET_KEY:-${STRIPE_SECRET_KEY}}
+      PAYMENT_STRIPE_WEBHOOK_SECRET: ${PAYMENT_STRIPE_WEBHOOK_SECRET:-${STRIPE_WEBHOOK_SECRET}}
+      PAYMENT_STRIPE_CURRENCY: ${PAYMENT_STRIPE_CURRENCY:-usd}
+      PAYMENT_STRIPE_SUCCESS_URL_TEMPLATE: ${PAYMENT_STRIPE_SUCCESS_URL_TEMPLATE:-http://localhost/tenant/leases/{leaseId}?payment=success}
+      PAYMENT_STRIPE_CANCEL_URL_TEMPLATE: ${PAYMENT_STRIPE_CANCEL_URL_TEMPLATE:-http://localhost/tenant/leases/{leaseId}?payment=cancel}
+    depends_on:
+      postgres:
+        condition: service_started
+      registry:
+        condition: service_healthy
+      lease:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: lms-rabbitmq
+    restart: unless-stopped
+    # guest/guest only works from loopback; other containers must use a dedicated user.
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-lms}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-lms}
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build: ./backend/auth-service
+    image: yosephberhanu/lms-auth-service:latest
+    container_name: lms-auth-service
+    environment:
+      LMS_SECURITY_ENABLED: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/lms/protocol/openid-connect/certs
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      KEYCLOAK_REALM: lms
+      KEYCLOAK_ADMIN_SERVICE_USERNAME: admin
+      KEYCLOAK_ADMIN_SERVICE_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+    depends_on:
+      keycloak:
+        condition: service_started
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  notification:
+    build: ./backend/notification
+    image: yosephberhanu/lms-notification:latest
+    container_name: lms-notification
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notification_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      LMS_SECURITY_ENABLED: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/lms/protocol/openid-connect/certs
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      KEYCLOAK_REALM: lms
+      KEYCLOAK_ADMIN_SERVICE_USERNAME: admin
+      KEYCLOAK_ADMIN_SERVICE_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      LMS_NOTIFICATION_BROKER: rabbitmq
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-lms}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-lms}
+      MANAGEMENT_HEALTH_RABBIT_ENABLED: "true"
+      PINGRAM_API_KEY: ${PINGRAM_API_KEY:-}
+      PINGRAM_BASE_URL: ${PINGRAM_BASE_URL:-https://api.pingram.io}
+      PINGRAM_NOTIFICATION_TYPE: ${PINGRAM_NOTIFICATION_TYPE:-lms_notification}
+      PINGRAM_SEND_PATH: ${PINGRAM_SEND_PATH:-/send}
+      PINGRAM_EMAIL_SENDER_NAME: ${PINGRAM_EMAIL_SENDER_NAME:-}
+      PINGRAM_EMAIL_SENDER_EMAIL: ${PINGRAM_EMAIL_SENDER_EMAIL:-}
+    depends_on:
+      postgres:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - lms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  manager:
+    build: ./frontend/manager
+    image: yosephberhanu/lms-manager-ui:latest
+    container_name: lms-manager
+    networks:
+      - lms-net
+
+  owner:
+    build: ./frontend/owner
+    image: yosephberhanu/lms-owner-ui:latest
+    container_name: lms-owner
+    networks:
+      - lms-net
+
+  tenant:
+    build: ./frontend/tenant
+    image: yosephberhanu/lms-tenant-ui:latest
+    container_name: lms-tenant
+    networks:
+      - lms-net
+
+  admin:
+    build: ./frontend/admin
+    image: yosephberhanu/lms-admin-ui:latest
+    container_name: lms-admin
+    networks:
+      - lms-net
+
+  gateway:
+    image: nginx:latest
+    container_name: lms-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/index.html:/usr/share/nginx/html/index.html:ro
+    depends_on:
+      property:
+        condition: service_started
+      lease:
+        condition: service_started
+      payment:
+        condition: service_healthy
+      manager:
+        condition: service_started
+      owner:
+        condition: service_started
+      tenant:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      notification:
+        condition: service_healthy
+      admin:
+        condition: service_started
+    networks:
+      - lms-net
+
+  
+volumes:
+  postgres_data:
+  # mongo_data:
+  minio_data:
+
+networks:
+  lms-net:
+    driver: bridge

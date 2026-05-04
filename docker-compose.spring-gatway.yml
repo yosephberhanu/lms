@@ -1,0 +1,27 @@
+services:
+  gateway:
+    build: ./backend/gateway
+    image: yosephberhanu/lms-gateway:latest
+    container_name: lms-gateway
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+      # Avoid 503s when Eureka discovery isn't ready/resolving.
+      # Inside docker network, service hostnames resolve to each container.
+      GATEWAY_PROPERTY_URI: http://property:8080
+      GATEWAY_LEASE_URI: http://lease:8080
+    depends_on:
+      registry:
+        condition: service_healthy
+      property:
+        condition: service_started
+      lease:
+        condition: service_started
+    networks:
+      - lms-net
+    ports:
+      - "80:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

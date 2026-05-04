@@ -1,0 +1,44 @@
+<a
+  href="#"
+  class="nav-link position-relative py-1 pr-3"
+  (click)="toggleDropdown($event)"
+  [attr.aria-expanded]="dropdownOpen()"
+  aria-label="Messages"
+>
+  <i class="far fa-bell fa-lg"></i>
+  @if (unreadCount() > 0) {
+    <span class="badge badge-warning position-absolute notification-bell-badge">{{ badgeText() }}</span>
+  }
+</a>
+<div
+  class="dropdown-menu dropdown-menu-right notification-bell-menu shadow"
+  [class.show]="dropdownOpen()"
+  (click)="$event.stopPropagation()"
+>
+  <span class="dropdown-header">Recent messages</span>
+  @if (loading()) {
+    <span class="dropdown-item text-muted small">Loading…</span>
+  } @else if (recent().length === 0) {
+    <span class="dropdown-item text-muted small">No messages</span>
+  } @else {
+    @for (n of recent(); track n.id) {
+      <a
+        [routerLink]="allMessagesPath()"
+        class="dropdown-item border-bottom py-2 small text-wrap"
+        [class.bg-light]="!n.readAt"
+        (click)="closeDropdown()"
+      >
+        <div class="font-weight-bold text-dark">{{ n.title }}</div>
+        <div class="text-muted">{{ n.createdAt | date: 'short' }}</div>
+      </a>
+    }
+  }
+  <div class="dropdown-divider m-0"></div>
+  <a
+    [routerLink]="allMessagesPath()"
+    class="dropdown-item text-center text-primary font-weight-bold py-2"
+    (click)="closeDropdown()"
+    >All messages</a
+  >
+</div>
+

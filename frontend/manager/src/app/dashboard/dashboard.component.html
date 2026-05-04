@@ -1,0 +1,116 @@
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading dashboard…</div>
+}
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (!loading && !errorMessage) {
+  <div class="row mb-3">
+    <div class="col-sm-6">
+      <h1 class="m-0">Dashboard</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>{{ totalProperties }}</h3>
+          <p>Properties</p>
+        </div>
+        <div class="icon"><i class="fas fa-building"></i></div>
+        <a routerLink="/properties" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-success">
+        <div class="inner">
+          <h3>{{ occupancyRate }}%</h3>
+          <p>Occupancy ({{ occupiedProperties }} active)</p>
+        </div>
+        <div class="icon"><i class="fas fa-chart-pie"></i></div>
+        <a routerLink="/leases" class="small-box-footer">Leases <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-warning">
+        <div class="inner">
+          <h3>{{ monthlyRevenue | currency }}</h3>
+          <p>Monthly revenue (active)</p>
+        </div>
+        <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+        <a routerLink="/leases" class="small-box-footer">View <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-danger">
+        <div class="inner">
+          <h3>{{ pendingLeases }}</h3>
+          <p>Pending approval</p>
+        </div>
+        <div class="icon"><i class="fas fa-clock"></i></div>
+        <a routerLink="/leases" class="small-box-footer">Review <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card card-outline card-primary">
+        <div class="card-header">
+          <h3 class="card-title">Lease pipeline</h3>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-sm m-0">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th class="text-right">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (status of leaseStatuses; track status) {
+                <tr>
+                  <td>{{ formatEnum(status) }}</td>
+                  <td class="text-right">{{ leasesForStatusCount(status) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card card-outline card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">Recent lease updates</h3>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-sm m-0">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th class="text-right">Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (lease of recentLeases; track lease.id) {
+                <tr>
+                  <td>
+                    <a [routerLink]="['/leases', lease.id]">{{
+                      lease.propertyNameSnapshot || propertyLabel(lease.propertyId)
+                    }}</a>
+                    <br />
+                    <small class="text-muted">{{ formatEnum(lease.status) }}</small>
+                  </td>
+                  <td class="text-right text-nowrap">{{ lease.updatedAt | date: 'medium' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+}

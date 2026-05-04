@@ -1,0 +1,8 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true,
+  "java.import.gradle.home": null,
+  "java.import.gradle.offline.enabled": false,
+  "java.gradle.buildServer.enabled": true
+}

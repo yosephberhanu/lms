@@ -1,0 +1,12 @@
+.notification-bell-menu {
+  min-width: 18rem;
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.notification-bell-badge {
+  top: -4px;
+  right: 0;
+  font-size: 0.65rem;
+  padding: 0.15em 0.35em;
+}

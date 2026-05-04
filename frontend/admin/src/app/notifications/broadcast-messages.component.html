@@ -1,0 +1,94 @@
+<div class="card card-primary card-outline">
+  <div class="card-header">
+    <h3 class="card-title">Broadcast in-app messages</h3>
+  </div>
+  <div class="card-body">
+    <p class="text-muted text-sm">
+      Deliver messages to tenants, staff, and owners. Choose specific users and/or all users that have a
+      selected <strong>role</strong>. Recipients are merged and de-duplicated.
+    </p>
+
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    <div class="form-group">
+      <label for="bc-title">Title</label>
+      <input id="bc-title" class="form-control" [(ngModel)]="title" maxlength="200" />
+    </div>
+    <div class="form-group">
+      <label for="bc-body">Message</label>
+      <textarea id="bc-body" class="form-control" rows="5" [(ngModel)]="body" maxlength="4000"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <h5 class="mt-3">Individual users</h5>
+        <div class="input-group mb-2">
+          <input type="text" class="form-control" placeholder="Search users" [(ngModel)]="userSearch" />
+          <div class="input-group-append">
+            <button type="button" class="btn btn-outline-secondary" (click)="loadUsers()" [disabled]="loadingUsers">
+              Search
+            </button>
+          </div>
+        </div>
+        @if (loadingUsers) {
+          <p class="text-muted">Loading users…</p>
+        } @else if (users.length === 0) {
+          <p class="text-muted">No users in this page.</p>
+        } @else {
+          <div class="table-responsive" style="max-height: 280px; overflow-y: auto">
+            <table class="table table-sm table-hover">
+              <thead>
+                <tr>
+                  <th style="width: 2rem"></th>
+                  <th>Username</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (u of users; track u.id) {
+                  <tr>
+                    <td>
+                      <input type="checkbox" [checked]="isUserSelected(u.username)" (change)="toggleUser(u.username)" />
+                    </td>
+                    <td>{{ u.username }}</td>
+                    <td class="text-muted text-sm">{{ u.email || '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+      <div class="col-lg-6">
+        <h5 class="mt-3">Mass by realm role</h5>
+        @if (loadingRoles) {
+          <p class="text-muted">Loading roles…</p>
+        } @else if (roles.length === 0) {
+          <p class="text-muted">No roles with prefix <code>lms-</code>.</p>
+        } @else {
+          <ul class="list-unstyled">
+            @for (r of roles; track r.name) {
+              <li class="mb-1">
+                <label class="mb-0 font-weight-normal">
+                  <input type="checkbox" class="mr-2" [checked]="isRoleSelected(r.name)" (change)="toggleRole(r.name)" />
+                  @if (r.description) {
+                    <span class="text-muted text-sm">{{ r.description }}</span>
+                  }
+                </label>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-primary mt-3" (click)="send()" [disabled]="sending">
+      {{ sending ? 'Sending…' : 'Send notifications' }}
+    </button>
+  </div>
+</div>

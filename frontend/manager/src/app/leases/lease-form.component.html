@@ -1,0 +1,178 @@
+<div class="row mb-3">
+  <div class="col-sm-6">
+    <h1 class="m-0">{{ isEdit ? 'Edit lease' : 'New lease' }}</h1>
+  </div>
+  <div class="col-sm-6 text-right">
+    <a routerLink="/leases" class="btn btn-default">Back to list</a>
+  </div>
+</div>
+
+@if (lookupsLoading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (lookupsError) {
+  <div class="alert alert-danger">{{ lookupsError }}</div>
+}
+
+@if (!lookupsLoading && !lookupsError) {
+  @if (loadError) {
+    <div class="alert alert-warning">{{ loadError }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (!loadError) {
+    <div class="card card-primary card-outline">
+      <div class="card-header">
+        <h3 class="card-title">Lease</h3>
+      </div>
+      <form class="card-body" [formGroup]="form" (ngSubmit)="save()">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Property</label>
+              <select class="form-control" formControlName="propertyId">
+                <option [ngValue]="null">Select…</option>
+                @for (p of properties; track p.id) {
+                  <option [ngValue]="p.id">
+                    {{ p.name }} — {{ p.city }} ({{ propertyLeaseStatusLabel(p.id) }})
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tenant</label>
+              <select class="form-control" formControlName="tenantId">
+                <option [ngValue]="null">Select…</option>
+                @for (t of tenants; track t.id) {
+                  <option [ngValue]="t.id">{{ t.displayName }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Monthly rent</label>
+              <input type="number" class="form-control" formControlName="monthlyRent" min="0" step="0.01" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Start date</label>
+              <input type="date" class="form-control" formControlName="startDate" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>End date</label>
+              <input type="date" class="form-control" formControlName="endDate" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Deposit (optional)</label>
+              <input type="number" class="form-control" formControlName="depositAmount" min="0" step="0.01" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Payment schedule (optional)</label>
+              <input type="text" class="form-control" formControlName="paymentSchedule" />
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="saveInFlight">
+          {{ saveInFlight ? 'Saving…' : 'Save lease' }}
+        </button>
+      </form>
+    </div>
+
+    <div class="card card-outline card-secondary mt-3">
+      <div class="card-header">
+        <h3 class="card-title mb-0">Attachments</h3>
+      </div>
+      <div class="card-body">
+        @if (attachmentsError) {
+          <div class="alert alert-danger">{{ attachmentsError }}</div>
+        }
+        <div class="form-group">
+          <label>Add file</label>
+          <input
+            type="file"
+            class="form-control"
+            [disabled]="uploadInFlight || queuedUploadInFlight"
+            (change)="onPickFiles($event)"
+            multiple
+          />
+          @if (uploadInFlight) {
+            <small class="text-muted">Uploading…</small>
+          }
+          @if (queuedUploadInFlight) {
+            <small class="text-muted">Saving lease & uploading queued files…</small>
+          }
+          @if (!isEdit) {
+            <small class="text-muted d-block">Files selected here will upload automatically after you save the lease.</small>
+          }
+        </div>
+
+        @if (!isEdit && queuedFiles.length) {
+          <h6 class="mb-2">Queued (will upload after save)</h6>
+          <ul class="list-unstyled mb-3">
+            @for (f of queuedFiles; track $index) {
+              <li class="d-flex justify-content-between align-items-center border rounded px-2 py-1 mb-1">
+                <span>{{ f.name }}</span>
+                <button type="button" class="btn btn-xs btn-outline-danger" (click)="removeQueuedFile($index)">
+                  Remove
+                </button>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (isEdit) {
+          @if (!attachments.length) {
+            <p class="text-muted mb-0">No attachments yet.</p>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered mb-0">
+                <thead>
+                  <tr>
+                    <th>File</th>
+                    <th>Uploaded</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (a of attachments; track a.id) {
+                    <tr>
+                      <td>
+                        <a [href]="attachmentHref(a)" target="_blank">
+                          {{ a.originalFileName }}
+                        </a>
+                      </td>
+                      <td>{{ a.uploadedAt | date: 'medium' }}</td>
+                      <td class="text-right">
+                        <button
+                          type="button"
+                          class="btn btn-xs btn-outline-danger"
+                          [disabled]="deleteInFlightId === a.id"
+                          (click)="deleteAttachment(a)"
+                        >
+                          {{ deleteInFlightId === a.id ? 'Removing…' : 'Remove' }}
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Lease Management System">
+  <defs>
+    <linearGradient id="lms-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#lms-bg)"/>
+  <!-- Simple property + lease sheet -->
+  <path fill="#38bdf8" d="M16 6 7 14v12h18V14L16 6z"/>
+  <path fill="#0f172a" d="M16 8.2 20.5 12H11.5L16 8.2z"/>
+  <rect x="11" y="15" width="10" height="9" rx="1" fill="#f8fafc"/>
+  <path fill="#1e3a5f" d="M13 17h6v1.2h-6V17zm0 2.2h6v1.2h-6v-1.2zm0 2.2h4v1.2h-4v-1.2z"/>
+</svg>

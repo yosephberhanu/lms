@@ -1,0 +1,76 @@
+services:
+  postgres:
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./backend/infra/postgres/init/00-init-databases.sql:/docker-entrypoint-initdb.d/00-init-databases.sql:ro
+      - ./backend/infra/postgres/init/01-init-properties.sql:/docker-entrypoint-initdb.d/01-init-properties.sql:ro
+      - ./backend/infra/postgres/init/02-init-lease.sql:/docker-entrypoint-initdb.d/02-init-lease.sql:ro
+  # mongo:
+  #   ports:
+  #     - "27017:27017"
+  minio:
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+  config:
+    build: ./backend/config
+    ports:
+      - "8888:8888"
+  property:
+      ports:
+      - "8081:8080"
+  lease:
+    build: ./backend/lease
+    ports:
+      - "8082:8080"
+  manager:
+    ports:
+      - "81:80"
+  owner:
+    ports:
+      - "82:80"
+  tenant:
+    ports:
+      - "83:80"
+  admin:
+    ports:
+      - "84:80"
+  auth-service:
+    ports:
+      - "8083:8080"
+    environment:
+      LMS_SECURITY_ENABLED: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/lms/protocol/openid-connect/certs
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      KEYCLOAK_REALM: lms
+      KEYCLOAK_ADMIN_SERVICE_USERNAME: admin
+      KEYCLOAK_ADMIN_SERVICE_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+  notification:
+    build: ./backend/notification
+    ports:
+      - "8084:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notification_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      LMS_SECURITY_ENABLED: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/lms/protocol/openid-connect/certs
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      KEYCLOAK_REALM: lms
+      KEYCLOAK_ADMIN_SERVICE_USERNAME: admin
+      KEYCLOAK_ADMIN_SERVICE_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      LMS_NOTIFICATION_BROKER: local
+      # Debug why JWT requests get 403 (prints security matchers/decisions)
+      SPRING_SECURITY_DEBUG: "true"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  registry:
+    ports:
+      - "8761:8761"
+  keycloak:
+    ports:
+      - "8180:8080"

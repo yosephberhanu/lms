@@ -1,0 +1,57 @@
+<div class="row mb-3">
+  <div class="col">
+    <h1 class="m-0">{{ title }}</h1>
+    @if (pendingOnly) {
+      <p class="text-muted mb-0">
+        Leases on your properties that are pending approval and still need <strong>your</strong> signature as the
+        designated owner on the lease (<code>owner_id</code> must match your party id).
+      </p>
+    }
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (!loading && !errorMessage) {
+  <div class="card">
+    <div class="card-body p-0 table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Property</th>
+            <th>Tenant</th>
+            <th>Owner on lease</th>
+            <th>Status</th>
+            <th>Rent</th>
+            <th>Updated</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of rows; track l.id) {
+            <tr>
+              <td>#{{ l.id }}</td>
+              <td>{{ l.propertyNameSnapshot || ('Property #' + l.propertyId) }}</td>
+              <td>{{ l.tenantNameSnapshot || l.tenant?.displayName || ('#' + l.tenantId) }}</td>
+              <td><code class="text-sm">{{ l.ownerId || '—' }}</code></td>
+              <td>{{ formatEnum(l.status) }}</td>
+              <td>{{ l.monthlyRent | currency }}</td>
+              <td>{{ l.updatedAt | date: 'short' }}</td>
+              <td><a [routerLink]="['/leases', l.id]">Open</a></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (rows.length === 0) {
+        <p class="p-3 text-muted mb-0">No leases in this view.</p>
+      }
+    </div>
+  </div>
+}

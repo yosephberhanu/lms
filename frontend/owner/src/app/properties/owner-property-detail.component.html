@@ -1,0 +1,137 @@
+<div class="row mb-3">
+  <div class="col">
+    <h1 class="m-0">Property</h1>
+  </div>
+  <div class="col-auto">
+    <a routerLink="/properties" class="btn btn-default">Back</a>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (notOwner) {
+  <div class="alert alert-warning">
+    This property is not in your portfolio for party id <code>{{ session.currentPartyId() }}</code> (no matching
+    ownership row and it does not appear under "My properties" for this id).
+  </div>
+}
+
+@if (!loading && property) {
+  <div class="card card-outline card-primary">
+    <div class="card-header">
+      <h3 class="card-title">{{ property.name }}</h3>
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-3">Type</dt>
+        <dd class="col-sm-9">{{ formatEnum(property.propertyType) }}</dd>
+        <dt class="col-sm-3">Address</dt>
+        <dd class="col-sm-9">
+          {{ property.addressLine1 }}
+          @if (property.addressLine2) {
+            <br />{{ property.addressLine2 }}
+          }
+          <br />{{ property.city }}, {{ property.stateOrProvince }} {{ property.postalCode }}
+          <br />{{ property.country }}
+        </dd>
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9">{{ property.description || '—' }}</dd>
+        <dt class="col-sm-3">Updated</dt>
+        <dd class="col-sm-9">{{ property.updatedAt | date: 'medium' }}</dd>
+      </dl>
+      <h4>Ownership</h4>
+      <table class="table table-sm table-bordered">
+        <thead>
+          <tr>
+            <th>Party ID</th>
+            <th>Role</th>
+            <th>%</th>
+            <th>From</th>
+            <th>To</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of property.ownerships; track o.id ?? $index) {
+            <tr [class.table-primary]="o.ownerPartyId.trim() === session.currentPartyId()">
+              <td>{{ o.ownerPartyId }}</td>
+              <td>{{ formatEnum(o.role) }}</td>
+              <td>{{ o.ownershipPercentage }}</td>
+              <td>{{ o.effectiveFrom }}</td>
+              <td>{{ o.effectiveTo || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <h4 class="mt-4">Your properties</h4>
+      @if (portfolio.length === 0) {
+        <p class="text-muted mb-0">No properties in your portfolio for this party id.</p>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of portfolio; track p.id) {
+                <tr [class.table-primary]="property && p.id === property.id">
+                  <td>{{ p.name }}</td>
+                  <td>{{ p.city }}</td>
+                  <td>
+                    @if (property && p.id === property.id) {
+                      <span class="text-muted">Current</span>
+                    } @else {
+                      <a [routerLink]="['/properties', p.id]">Open</a>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <h4 class="mt-4">Lease history on this property</h4>
+      @if (leasesOnProperty.length === 0) {
+        <p class="text-muted mb-0">No leases for this property yet.</p>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>Lease</th>
+                <th>Tenant</th>
+                <th>Status</th>
+                <th>Term</th>
+                <th>Rent</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (l of leasesOnProperty; track l.id) {
+                <tr>
+                  <td>#{{ l.id }}</td>
+                  <td>{{ l.tenantNameSnapshot || l.tenant?.displayName || ('#' + l.tenantId) }}</td>
+                  <td>{{ formatEnum(l.status) }}</td>
+                  <td>{{ l.startDate }} — {{ l.endDate }}</td>
+                  <td>{{ l.monthlyRent | currency }}</td>
+                  <td><a [routerLink]="['/leases', l.id]">Open</a></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+}

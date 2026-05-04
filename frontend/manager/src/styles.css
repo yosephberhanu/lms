@@ -1,0 +1,9 @@
+/* Global: AdminLTE + Bootstrap provide base layout and typography. */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}

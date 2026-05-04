@@ -1,0 +1,62 @@
+<div class="row mb-3">
+  <div class="col-sm-6">
+    <h1 class="m-0">Leases</h1>
+  </div>
+  <div class="col-sm-6 text-right">
+    <a routerLink="/leases/new" class="btn btn-primary"><i class="fas fa-plus mr-1"></i> New lease</a>
+    <a routerLink="/properties" class="btn btn-outline-secondary ml-2">Check property availability</a>
+  </div>
+</div>
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+<div class="card card-outline card-warning">
+  <div class="card-header">
+    <h3 class="card-title">Filters</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-3">
+        <label>
+          Property ID
+          <input type="text" class="form-control" [(ngModel)]="propertyId" [ngModelOptions]="{ standalone: true }" />
+        </label>
+      </div>
+      <div class="col-md-3">
+        <label>
+          Tenant ID
+          <input type="text" class="form-control" [(ngModel)]="tenantId" [ngModelOptions]="{ standalone: true }" />
+        </label>
+      </div>
+      <div class="col-md-3">
+        <label>
+          Status
+          <select class="form-control" [(ngModel)]="statusFilter" [ngModelOptions]="{ standalone: true }">
+            <option value="">All</option>
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ formatEnum(s) }}</option>
+            }
+          </select>
+        </label>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button type="button" class="btn btn-secondary mr-2" (click)="load()" [disabled]="loading">Apply</button>
+        <button type="button" class="btn btn-default" (click)="clearFilters()" [disabled]="loading">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (!loading) {
+  <div class="card">
+    <div class="card-body p-0">
+      <table [id]="tableId" class="table table-striped table-bordered w-100"></table>
+    </div>
+  </div>
+}

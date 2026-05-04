@@ -1,0 +1,2637 @@
+{
+  "pages": [
+    {
+      "page_id": "page_c1",
+      "type": "diagram",
+      "title": "C1: LMS – System Context",
+      "diagrams": [
+        {
+          "diagram_id": "c1",
+          "diagram_type": "c4",
+          "layout": "manual",
+          "title": "LMS Context Diagram",
+          "description": "A context diagram showing the key external systems and users of the LMS platform.",
+          "nodes": [
+            {
+              "id": "admin_user",
+              "type": "person",
+              "x": 260,
+              "y": 180,
+              "data": {
+                "name": "Administrator",
+                "role": "User",
+                "description": "A administrator user is a user who manages the system."
+              }
+            },
+            {
+              "id": "manager_user",
+              "type": "person",
+              "x": 260,
+              "y": 280,
+              "data": {
+                "name": "Property Manager",
+                "role": "User",
+                "description": "A property manager user is a user who manages one or more properties."
+              }
+            },
+            {
+              "id": "owner_user",
+              "type": "person",
+              "x": 260,
+              "y": 380,
+              "data": {
+                "name": "Owner",
+                "role": "User",
+                "description": "An owner user is a user who owns one or more properties."
+              }
+            },
+            {
+              "id": "tenant_user",
+              "type": "person",
+              "x": 260,
+              "y": 480,
+              "data": {
+                "name": "Tenant",
+                "role": "User",
+                "description": "A tenant user is a user who rents a property from the landlord."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 520,
+              "y": 320,
+              "data": {
+                "type": "Software System",
+                "title": "Lease Management System",
+                "desc": "Web App",
+                "description": "A web application for managing leases and properties",
+                "test-coverage": {
+                  "description": "90% line coverage, critical paths covered",
+                  "scale": 0.9
+                },
+                "change-frequency": {
+                  "description": "Low churn; stable API",
+                  "scale": 0.2
+                },
+                "contributors": 2,
+                "complexity": {
+                  "description": "Cyclomatic complexity 12 (moderate)",
+                  "scale": 0.6
+                }
+              }
+            },
+            {
+              "id": "pingram",
+              "type": "external",
+              "x": 800,
+              "y": 200,
+              "data": {
+                "type": "External System",
+                "title": "pingram.io",
+                "desc": "Notification API",
+                "description": "pingram.io is an all-in-one messaging API that lets developers send and receive notifications—like email, SMS, calls, and in-app alerts—through a single, simple interface. It is used in LMS to send notifications to users as SMS and email."
+              }
+            },
+            {
+              "id": "stripe",
+              "type": "external",
+              "x": 800,
+              "y": 320,
+              "data": {
+                "type": "External System",
+                "title": "Stripe",
+                "desc": "Payment System",
+                "description": "Stripe is a payment processing platform that is used in LMS to process lease payments for tenants."
+              }
+            },
+            {
+              "id": "keycloak",
+              "type": "external",
+              "x": 800,
+              "y": 440,
+              "data": {
+                "type": "External System",
+                "title": "Keycloak",
+                "desc": "Identity Provider",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "admin_lms",
+              "type": "uses",
+              "direction": 0,
+              "from": "admin_user",
+              "to": "lms",
+              "label": "Uses",
+              "description": "Uses LMS to manage users and broadcast messages."
+            },
+            {
+              "id": "manager_lms",
+              "type": "uses",
+              "direction": 0,
+              "from": "manager_user",
+              "to": "lms",
+              "label": "Uses",
+              "description": "Uses LMS to manage owners, tenants, properties, and leases."
+            },
+            {
+              "id": "owner_lms",
+              "type": "uses",
+              "direction": 0,
+              "from": "owner_user",
+              "to": "lms",
+              "label": "Uses",
+              "description": "Uses the LMS to manage their properties."
+            },
+            {
+              "id": "tenant_lms",
+              "type": "uses",
+              "direction": 0,
+              "from": "tenant_user",
+              "to": "lms",
+              "label": "Uses",
+              "description": "Uses the LMS to manage their lease and payments."
+            },
+            {
+              "id": "lms_pingram",
+              "type": "depends",
+              "direction": 1,
+              "from": "lms",
+              "to": "pingram",
+              "label": "REST API",
+              "description": "Sends notifications as SMS and email using the pingram API."
+            },
+            {
+              "id": "lms_stripe",
+              "type": "uses",
+              "direction": 0,
+              "from": "lms",
+              "to": "stripe",
+              "label": "Payment",
+              "description": "Uses Stripe for payment processing."
+            },
+            {
+              "id": "lms_keycloak",
+              "type": "uses",
+              "direction": 0,
+              "from": "lms",
+              "to": "keycloak",
+              "label": "OIDC",
+              "description": "Delegates authentication to external IdP."
+            }
+          ],
+          "groups": {}
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "type": "diagram",
+      "title": "LMS – Container Diagram",
+      "description": "A container diagram showing the key runtime units inside the LMS platform.",
+      "diagrams": [
+        {
+          "diagram_id": "c2",
+          "diagram_type": "c4-container",
+          "layout": "manual",
+          "title": "LMS Container Diagram",
+          "description": "A container diagram showing the key runtime units inside the LMS platform.",
+          "nodes": [
+            {
+              "id": "admin_user",
+              "type": "person",
+              "x": 260,
+              "y": 100,
+              "data": {
+                "name": "Administrator",
+                "role": "User",
+                "description": "An end user who signs in to the platform."
+              }
+            },
+            {
+              "id": "manager_user",
+              "type": "person",
+              "x": 260,
+              "y": 200,
+              "data": {
+                "name": "Property Manager",
+                "role": "User",
+                "description": "An end user who signs in to the platform."
+              }
+            },
+            {
+              "id": "owner_user",
+              "type": "person",
+              "x": 260,
+              "y": 300,
+              "data": {
+                "name": "Owner",
+                "role": "User",
+                "description": "An end user who signs in to the platform."
+              }
+            },
+            {
+              "id": "tenant_user",
+              "type": "person",
+              "x": 260,
+              "y": 400,
+              "data": {
+                "name": "Tenant",
+                "role": "User",
+                "description": "An end user who signs in to the platform."
+              }
+            },
+            {
+              "id": "lms_boundary",
+              "type": "boundary",
+              "x": 1050,
+              "y": 280,
+              "data": {
+                "label": "Software System",
+                "description": "Components that implement the Auth API container."
+              },
+              "width": 1100,
+              "height": 550,
+              "test-coverage": 0.8,
+              "change-frequency": 0.5,
+              "contributors": 20
+            },
+            {
+              "id": "admin_spa",
+              "type": "container",
+              "x": 600,
+              "y": 100,
+              "data": {
+                "type": "Container",
+                "title": "Admin",
+                "desc": "Angular SPA",
+                "description": "HTTP API that issues tokens and validates sessions.",
+                "test-coverage": 0.6,
+                "change-frequency": 0.4,
+                "contributors": 20
+              }
+            },
+            {
+              "id": "manager_spa",
+              "type": "container",
+              "x": 600,
+              "y": 200,
+              "data": {
+                "type": "Container",
+                "title": "Manager",
+                "desc": "Angular SPA",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "owner_spa",
+              "type": "container",
+              "x": 600,
+              "y": 300,
+              "data": {
+                "type": "Container",
+                "title": "Owner",
+                "desc": "Angular SPA",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "tenant_spa",
+              "type": "container",
+              "x": 600,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Tenant",
+                "desc": "Angular SPA",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "gateway_api",
+              "type": "container",
+              "x": 900,
+              "y": 260,
+              "data": {
+                "type": "Container",
+                "title": "Gateway",
+                "desc": "Cleanup + audits",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "notification_api",
+              "type": "container",
+              "x": 1200,
+              "y": 50,
+              "data": {
+                "type": "Container",
+                "title": "Notification API",
+                "desc": "Cleanup + audits",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "auth_service_api",
+              "type": "container",
+              "x": 900,
+              "y": 50,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service API",
+                "desc": "Cleanup + audits",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "lease_api",
+              "type": "container",
+              "x": 1200,
+              "y": 250,
+              "data": {
+                "type": "Container",
+                "title": "Lease API",
+                "desc": "Cleanup + audits",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "property_api",
+              "type": "container",
+              "x": 1200,
+              "y": 350,
+              "data": {
+                "type": "Container",
+                "title": "Property API",
+                "desc": "Cleanup + audits",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "payment_api",
+              "type": "container",
+              "x": 1200,
+              "y": 450,
+              "data": {
+                "type": "Container",
+                "title": "Payment API",
+                "desc": "Cleanup + audits",
+                "description": "Background worker for expiring sessions and auditing.",
+                "test-coverage": 0.7,
+                "change-frequency": 0.2,
+                "contributors": 3
+              }
+            },
+            {
+              "id": "minio",
+              "type": "database",
+              "x": 1500,
+              "y": 200,
+              "data": {
+                "type": "Database",
+                "title": "Minio",
+                "desc": "Users, tokens",
+                "description": "Stores credentials, sessions, and audit data."
+              }
+            },
+            {
+              "id": "db",
+              "type": "database",
+              "x": 1500,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "DB",
+                "desc": "PostgreSQL",
+                "description": "Stores credentials, sessions, and audit data."
+              }
+            },
+            {
+              "id": "keycloak",
+              "type": "external",
+              "x": 900,
+              "y": -120,
+              "data": {
+                "type": "Identity Provider",
+                "title": "Keycloak",
+                "desc": "Keycloak Identity Provider",
+                "description": "Stores credentials, sessions, and audit data."
+              }
+            },
+            {
+              "id": "pingram",
+              "type": "external",
+              "x": 1200,
+              "y": -120,
+              "data": {
+                "type": "External System",
+                "title": "pingram",
+                "desc": "Notification API",
+                "description": "Stores user profiles and session data."
+              }
+            },
+            {
+              "id": "stripe",
+              "type": "external",
+              "x": 1200,
+              "y": 650,
+              "data": {
+                "type": "External System",
+                "title": "Stripe",
+                "desc": "Payment System",
+                "description": "External identity provider for SSO."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "admin_admin",
+              "type": "uses",
+              "direction": 0,
+              "from": "admin_user",
+              "to": "admin_spa",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "manager_manager",
+              "type": "uses",
+              "direction": 0,
+              "from": "manager_user",
+              "to": "manager_spa",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "owner_owner",
+              "type": "uses",
+              "direction": 0,
+              "from": "owner_user",
+              "to": "owner_spa",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "tenant_tenant",
+              "type": "uses",
+              "direction": 0,
+              "from": "tenant_user",
+              "to": "tenant_spa",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "admin_gateway",
+              "type": "uses",
+              "direction": 0,
+              "from": "admin_spa",
+              "to": "gateway_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "manager_gateway",
+              "type": "uses",
+              "direction": 0,
+              "from": "manager_spa",
+              "to": "gateway_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "owner_gateway",
+              "type": "uses",
+              "direction": 0,
+              "from": "owner_spa",
+              "to": "gateway_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "tenant_gateway",
+              "type": "uses",
+              "direction": 0,
+              "from": "tenant_spa",
+              "to": "gateway_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "gateway_auth",
+              "type": "uses",
+              "direction": 0,
+              "from": "gateway_api",
+              "to": "auth_service_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "gateway_auth",
+              "type": "uses",
+              "direction": 0,
+              "from": "gateway_api",
+              "to": "lease_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "gateway_auth",
+              "type": "uses",
+              "direction": 0,
+              "from": "gateway_api",
+              "to": "notification_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "gateway_auth",
+              "type": "uses",
+              "direction": 0,
+              "from": "gateway_api",
+              "to": "payment_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "gateway_auth",
+              "type": "uses",
+              "direction": 0,
+              "from": "gateway_api",
+              "to": "property_api",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "auth_keycloak",
+              "type": "uses",
+              "direction": 0,
+              "from": "auth_service_api",
+              "to": "keycloak",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "lease_minio",
+              "type": "uses",
+              "direction": 0,
+              "from": "lease_api",
+              "to": "minio",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "lease_db",
+              "type": "uses",
+              "direction": 0,
+              "from": "lease_api",
+              "to": "db",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "property_db",
+              "type": "uses",
+              "direction": 0,
+              "from": "property_api",
+              "to": "db",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "payment_db",
+              "type": "uses",
+              "direction": 0,
+              "from": "payment_api",
+              "to": "db",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "notification_db",
+              "type": "uses",
+              "direction": 0,
+              "from": "notification_api",
+              "to": "db",
+              "label": "Uses",
+              "description": "User authenticates with Auth Service."
+            },
+            {
+              "id": "notification_pingram",
+              "type": "depends",
+              "direction": 1,
+              "from": "notification_api",
+              "to": "pingram",
+              "label": "Read/write",
+              "description": "Auth Service persists user data."
+            },
+            {
+              "id": "payment_stripe",
+              "type": "uses",
+              "direction": 0,
+              "from": "payment_api",
+              "to": "stripe",
+              "label": "Payment",
+              "description": "Delegates auth to external IdP."
+            }
+          ],
+          "groups": {
+            "lms_boundary": [
+              "admin_spa",
+              "tenant_spa",
+              "manager_spa",
+              "owner_spa",
+              "auth_service_api",
+              "config_api",
+              "gateway_api",
+              "lease_api",
+              "notification_api",
+              "payment_api",
+              "property_api",
+              "db",
+              "minio"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3a",
+      "type": "diagram",
+      "title": "C3a: Lease API – Component Diagram",
+      "description": "A component diagram for the Auth API container.",
+      "diagrams": [
+        {
+          "diagram_id": "c3a",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Lease API – Component Diagram",
+          "description": "A component diagram for the Auth API container.",
+          "nodes": [
+            {
+              "id": "boundary2",
+              "type": "boundary",
+              "x": 520,
+              "y": 360,
+              "data": {
+                "label": "Auth API Container",
+                "description": "Components that implement the Auth API container."
+              },
+              "width": 520,
+              "height": 260,
+              "test-coverage": 0.8,
+              "change-frequency": 0.5,
+              "contributors": 20
+            },
+            {
+              "id": "comp1",
+              "type": "component",
+              "x": 420,
+              "y": 320,
+              "data": {
+                "type": "Component",
+                "title": "Token Service",
+                "desc": "Issues JWTs",
+                "description": "Responsible for signing and validating tokens.",
+                "test-coverage": 0.6,
+                "change-frequency": 0.4,
+                "contributors": 4
+              }
+            },
+            {
+              "id": "comp2",
+              "type": "component",
+              "x": 620,
+              "y": 320,
+              "data": {
+                "type": "Component",
+                "title": "MFA Handler",
+                "desc": "Verifies codes",
+                "description": "Orchestrates multi-factor authentication flows.",
+                "test-coverage": 0.99,
+                "change-frequency": 0.6,
+                "contributors": 20
+              }
+            },
+            {
+              "id": "comp3",
+              "type": "component",
+              "x": 420,
+              "y": 430,
+              "data": {
+                "type": "Component",
+                "title": "Session Store",
+                "desc": "Session state",
+                "description": "Caches active sessions and refresh tokens.",
+                "test-coverage": 0.6,
+                "change-frequency": 0.7,
+                "contributors": 11
+              }
+            },
+            {
+              "id": "comp4",
+              "type": "component",
+              "x": 620,
+              "y": 430,
+              "data": {
+                "type": "Component",
+                "title": "Audit Logger",
+                "desc": "Security events",
+                "description": "Captures auth-related events for compliance."
+              }
+            },
+            {
+              "id": "db3",
+              "type": "database",
+              "x": 900,
+              "y": 360,
+              "data": {
+                "type": "Database",
+                "title": "Auth DB",
+                "desc": "Users, sessions",
+                "description": "Durable store for identities and session data."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "co1",
+              "type": "uses",
+              "direction": 0,
+              "from": "comp1",
+              "to": "comp3",
+              "label": "Persist",
+              "description": "Token service persists session metadata."
+            },
+            {
+              "id": "co2",
+              "type": "uses",
+              "direction": 0,
+              "from": "comp2",
+              "to": "comp1",
+              "label": "Issue tokens",
+              "description": "MFA completion triggers token issuance."
+            },
+            {
+              "id": "co3",
+              "type": "depends",
+              "direction": 1,
+              "from": "comp3",
+              "to": "db3",
+              "label": "Read/write",
+              "description": "Session store writes to persistent storage."
+            },
+            {
+              "id": "co4",
+              "type": "uses",
+              "direction": 0,
+              "from": "comp4",
+              "to": "db3",
+              "label": "Audit",
+              "description": "Audit logger stores security events."
+            }
+          ],
+          "groups": {
+            "boundary2": [
+              "comp1",
+              "comp2",
+              "comp3",
+              "comp4"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3b",
+      "type": "diagram",
+      "title": "C3b: Property API – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3b",
+          "diagram_type": "c4-container",
+          "layout": "manual",
+          "title": "Property API – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3c",
+      "type": "diagram",
+      "title": "C3c: Notification API – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3c",
+          "diagram_type": "c4-container",
+          "layout": "manual",
+          "title": "Notification API – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3d",
+      "type": "diagram",
+      "title": "C3d: Payment API – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3d",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Payment API – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3e",
+      "type": "diagram",
+      "title": "C3e: Authentication API – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "component_diagram4",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Authentication API – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3f",
+      "type": "diagram",
+      "title": "C3f: Gateway – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3f",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Gateway – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3g",
+      "type": "diagram",
+      "title": "C3g: Admin App – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3g",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Admin SPA – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3h",
+      "type": "diagram",
+      "title": "C3h: Manager App – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3h",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Manager SPA – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3i",
+      "type": "diagram",
+      "title": "Owner App – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3i",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Owner SPA – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c3j",
+      "type": "diagram",
+      "title": "C3j: Tenant App – Component Diagram",
+      "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions. You can also describe the diagram to your mentor by clicking the button below. The description is powered by AI. It will help you understand the diagram and answer your questions. The diagram includes various components such as users, systems, containers, and databases. You can interact with the diagram by dragging nodes, panning with Space+drag, and zooming with the mouse wheel.  You can also fit the diagram to the view by clicking the button below. The diagram will be resized to fit the view. You can also reset the zoom and pan by clicking the button below. The diagram will be reset to the original size and position.",
+      "diagrams": [
+        {
+          "diagram_id": "c3j",
+          "diagram_type": "c4-component",
+          "layout": "manual",
+          "title": "Tenant SPA – Component Diagram",
+          "description": "This is a sample C4 diagram showing an identity and access management system architecture. You can ask your mentor about the diagram by clicking the button below. The chat is powered by AI. It will help you understand the diagram and answer your questions.",
+          "nodes": [
+            {
+              "id": "uml1",
+              "type": "uml-class",
+              "x": 200,
+              "y": 150,
+              "data": {
+                "stereo": "<<entity>>",
+                "name": "UserAccount",
+                "attributes": [
+                  "− id : UUID",
+                  "− email : string"
+                ],
+                "methods": [
+                  "+ activate() : void",
+                  "+ changeEmail(email) : boolean"
+                ],
+                "description": "UserAccount is an entity class representing a user account in the system. It contains unique identifiers (UUID), email address, and methods for account activation and email changes. This class is part of the identity management domain model.",
+                "test-coverage": 0.9,
+                "change-frequency": 0.2,
+                "contributors": 2
+              }
+            },
+            {
+              "id": "person1",
+              "type": "person",
+              "x": 500,
+              "y": 150,
+              "data": {
+                "name": "End User",
+                "role": "Manages accounts",
+                "description": "The End User is a person who interacts with the identity and access management system. They use the system to manage their accounts, authenticate, and access various services. End users are the primary actors in this C4 context diagram."
+              }
+            },
+            {
+              "id": "lms",
+              "type": "system",
+              "x": 800,
+              "y": 150,
+              "data": {
+                "type": "Software System",
+                "title": "Keycloak",
+                "desc": "Identity & Access Management",
+                "description": "Keycloak is an open-source identity and access management solution. It provides authentication, authorization, user federation, and social login capabilities. Keycloak acts as the central identity provider for the system, managing user accounts and providing secure access tokens.",
+                "test-coverage": {
+                  "description": "75% coverage; auth flows and realm APIs covered",
+                  "scale": 0.75
+                },
+                "change-frequency": 0.8,
+                "contributors": 6,
+                "complexity": {
+                  "description": "High structural complexity (15); consider modularization",
+                  "scale": 0.75
+                }
+              }
+            },
+            {
+              "id": "ext1",
+              "type": "external",
+              "x": 1100,
+              "y": 150,
+              "data": {
+                "type": "Software System (External)",
+                "title": "Google Workspace",
+                "desc": "SAML / OIDC identity provider",
+                "description": "Google Workspace is an external software system that provides SAML and OIDC identity provider services. It allows users to authenticate using their Google accounts, enabling single sign-on (SSO) capabilities. This external system is integrated with Keycloak to provide federated identity management."
+              }
+            },
+            {
+              "id": "cont1",
+              "type": "container",
+              "x": 300,
+              "y": 400,
+              "data": {
+                "type": "Container",
+                "title": "Auth Service",
+                "desc": "Handles login, tokens, sessions",
+                "description": "The Auth Service is a container application that handles user authentication, token generation, and session management. It processes login requests, validates credentials, and issues access tokens. This service is responsible for the core authentication logic within the Keycloak platform."
+              },
+              "test-coverage": 0.3,
+              "change-frequency": 0.8,
+              "contributors": 9
+            },
+            {
+              "id": "bound1",
+              "type": "boundary",
+              "x": 600,
+              "y": 550,
+              "data": {
+                "label": "Keycloak Platform",
+                "description": "The Keycloak Platform boundary represents the entire Keycloak system infrastructure. It contains all the internal components, services, and databases that make up the identity and access management platform. This boundary groups related components together to show the system's internal architecture."
+              },
+              "width": 500,
+              "height": 200,
+              "test-coverage": 0.5,
+              "change-frequency": 0.12,
+              "contributors": 5
+            },
+            {
+              "id": "pingram",
+              "type": "database",
+              "x": 1000,
+              "y": 400,
+              "data": {
+                "type": "Database",
+                "title": "PostgreSQL",
+                "desc": "Users, realms, sessions",
+                "description": "PostgreSQL is the primary database used by Keycloak to store user accounts, realms, sessions, and other identity-related data. It provides persistent storage for all authentication and authorization information, ensuring data durability and consistency across the platform."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "person1",
+              "to": "lms",
+              "label": "Uses HTTPS",
+              "type": "uses",
+              "direction": 0,
+              "description": "The user connects to the Keycloak system using HTTPS protocol. This ensures secure, encrypted communication between the user's browser and the authentication server, protecting sensitive credentials and session data during transmission."
+            },
+            {
+              "id": "e2",
+              "from": "lms",
+              "to": "ext1",
+              "label": "OIDC/SAML",
+              "type": "uses",
+              "direction": 1,
+              "description": "The Keycloak system communicates with external identity providers using OIDC (OpenID Connect) or SAML (Security Assertion Markup Language) protocols. These industry-standard protocols enable secure authentication and authorization across different systems and organizations."
+            },
+            {
+              "id": "e3",
+              "from": "cont1",
+              "to": "lms",
+              "label": "Authenticates",
+              "type": "depends",
+              "direction": 3,
+              "description": "The Keycloak container service authenticates user requests through the main Keycloak system. This process validates user credentials, manages sessions, and ensures that only authorized users can access protected resources."
+            },
+            {
+              "id": "e4",
+              "from": "cont1",
+              "to": "pingram",
+              "label": "Stores data",
+              "type": "depends",
+              "direction": 1,
+              "description": "The Keycloak container persists user data, authentication tokens, and session information to the PostgreSQL database. This ensures data durability and allows the system to maintain state across restarts and scale horizontally."
+            },
+            {
+              "id": "e5",
+              "from": "lms",
+              "to": "pingram",
+              "label": "Persists",
+              "type": "uses",
+              "direction": 0,
+              "description": "The Keycloak system persists critical identity and access management data to the PostgreSQL database. This includes user accounts, realm configurations, authentication sessions, and authorization policies, ensuring all data is stored reliably and can be queried efficiently."
+            }
+          ],
+          "groups": {
+            "bound1": [
+              "uml1"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "walkthrough": [],
+  "navigations": [
+    {
+      "page_id": "page_c1",
+      "element_id": "lms",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c2"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": {
+            "code_id": "/"
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "property_api",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3b"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/backend/property"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "lease_api",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3a"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/backend/lease"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "notification_api",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3c"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/backend/notification"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "payment_api",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3d"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/backend/payment"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "auth_service_api",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3e"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/backend/auth-service"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "gateway_api",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3f"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/backend/gateway"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "admin_spa",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3g"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/frontend/admin"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "manager_spa",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3h"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/frontend/manager"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "owner_spa",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3i"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/frontend/owner"
+        }
+      ]
+    },
+    {
+      "page_id": "page_c2",
+      "element_id": "tenant_spa",
+      "events_actions": [
+        {
+          "event": "dblclick",
+          "action": "open_page",
+          "target": {
+            "page_id": "page_c3j"
+          }
+        },
+        {
+          "event": "code",
+          "action": "open_code",
+          "target": "/frontend/tenant"
+        }
+      ]
+    }
+  ]
+}

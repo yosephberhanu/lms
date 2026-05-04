@@ -1,0 +1,63 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+lms:
+  security:
+    enabled: ${LMS_SECURITY_ENABLED:false}
+  pingram:
+    base-url: ${PINGRAM_BASE_URL:https://api.pingram.io}
+    api-key: ${PINGRAM_API_KEY:}
+    sender-name: ${PINGRAM_EMAIL_SENDER_NAME:}
+    sender-email: ${PINGRAM_EMAIL_SENDER_EMAIL:}
+  notification:
+    # local = in-process executor after commit; rabbitmq = publish to RabbitMQ then consume for SSE fan-out
+    broker: ${LMS_NOTIFICATION_BROKER:local}
+    rabbit:
+      exchange: ${LMS_NOTIFICATION_RABBIT_EXCHANGE:lms.notification}
+      queue: ${LMS_NOTIFICATION_RABBIT_QUEUE:lms.notification.in-app}
+      routing-key: ${LMS_NOTIFICATION_RABBIT_ROUTING_KEY:in-app.notification.delivered}
+  keycloak:
+    base-url: ${KEYCLOAK_INTERNAL_URL:http://localhost:8180}
+    realm: ${KEYCLOAK_REALM:lms}
+    admin-username: ${KEYCLOAK_ADMIN_SERVICE_USERNAME:admin}
+    admin-password: ${KEYCLOAK_ADMIN_SERVICE_PASSWORD:admin}
+
+spring:
+  application:
+    name: notification
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/notification_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    url: ../v3/api-docs
+    config-url: ../v3/api-docs/swagger-config
+    use-root-path: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    rabbit:
+      enabled: ${MANAGEMENT_HEALTH_RABBIT_ENABLED:false}

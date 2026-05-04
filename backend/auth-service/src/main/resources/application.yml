@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+lms:
+  security:
+    enabled: ${LMS_SECURITY_ENABLED:false}
+  keycloak:
+    base-url: ${KEYCLOAK_INTERNAL_URL:http://localhost:8180}
+    realm: ${KEYCLOAK_REALM:lms}
+    admin-username: ${KEYCLOAK_ADMIN_SERVICE_USERNAME:admin}
+    admin-password: ${KEYCLOAK_ADMIN_SERVICE_PASSWORD:admin}
+
+spring:
+  application:
+    name: auth-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

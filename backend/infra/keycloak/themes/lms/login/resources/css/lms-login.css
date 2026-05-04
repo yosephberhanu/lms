@@ -1,0 +1,170 @@
+/* Align Keycloak login with LMS gateway homepage (nginx/index.html) — slate palette, card chrome, hero band. */
+html.login-pf {
+  --lms-bg: #f8fafc;
+  --lms-fg: #0f172a;
+  --lms-muted: #475569;
+  --lms-border: #e2e8f0;
+  --lms-accent: #2563eb;
+  --lms-accent-hover: #1d4ed8;
+  --lms-hero-top: #0f172a;
+  --lms-hero-bottom: #1e3a5f;
+  --lms-card-bg: #ffffff;
+  --lms-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  html.login-pf {
+    --lms-bg: #0b1120;
+    --lms-fg: #f1f5f9;
+    --lms-muted: #94a3b8;
+    --lms-border: #1e293b;
+    --lms-accent: #60a5fa;
+    --lms-accent-hover: #93c5fd;
+    --lms-hero-top: #020617;
+    --lms-hero-bottom: #0f172a;
+    --lms-card-bg: #111827;
+    --lms-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+}
+
+html.login-pf body,
+.login-pf body {
+  background: linear-gradient(180deg, var(--lms-hero-top) 0%, var(--lms-hero-bottom) 140px, var(--lms-bg) 140px)
+    fixed !important;
+  background-size: auto !important;
+  min-height: 100vh;
+  color: var(--lms-fg);
+}
+
+.login-pf-page {
+  background: transparent;
+}
+
+/* Top bar (injected by lms-home-bar.js) */
+#lms-back-home {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  background: color-mix(in srgb, var(--lms-card-bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--lms-border);
+  margin: 0;
+}
+
+#lms-back-home .lms-back-home__inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+#lms-back-home .lms-back-home__link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--lms-accent);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+#lms-back-home .lms-back-home__link:hover {
+  color: var(--lms-accent-hover);
+  text-decoration: underline;
+}
+
+#lms-back-home .lms-back-home__brand {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--lms-fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Header / realm title */
+#kc-header,
+#kc-header-wrapper {
+  color: rgba(248, 250, 252, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+#kc-header-wrapper {
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  padding-top: 1.25rem;
+  padding-bottom: 0.25rem;
+}
+
+@media (max-width: 767px) {
+  html.login-pf body,
+  .login-pf body {
+    background: var(--lms-bg) !important;
+  }
+
+  #kc-header,
+  #kc-header-wrapper {
+    color: var(--lms-fg);
+    text-shadow: none;
+  }
+
+  #kc-header-wrapper {
+    padding-top: 0.75rem;
+  }
+}
+
+/* Text logo instead of Keycloak wordmark */
+div.kc-logo-text {
+  background-image: none;
+  height: auto;
+  width: auto;
+  margin: 0 auto 0.35rem;
+}
+
+div.kc-logo-text span {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.75);
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  div.kc-logo-text span {
+    color: var(--lms-muted);
+  }
+}
+
+/* Card: match gateway portal tiles */
+.login-pf-page .card-pf {
+  margin: 0 auto;
+  max-width: 500px;
+  border-radius: 16px;
+  border: 1px solid var(--lms-border);
+  border-top: 3px solid var(--lms-accent);
+  box-shadow: var(--lms-shadow);
+  background: var(--lms-card-bg);
+  padding: 1.25rem 1.35rem 1.5rem;
+}
+
+.login-pf .container {
+  padding-top: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .login-pf .container {
+    padding-top: 1.5rem;
+  }
+}
+
+/* Page title inside card (PatternFly) */
+.login-pf-page #kc-page-title {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--lms-fg);
+}

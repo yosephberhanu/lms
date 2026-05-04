@@ -1,0 +1,41 @@
+<div class="row mb-3">
+  <div class="col-sm-6">
+    <h1 class="m-0">Tenant</h1>
+  </div>
+  <div class="col-sm-6 text-right">
+    <a routerLink="/tenants" class="btn btn-default">Back to list</a>
+    @if (tenant) {
+      <a [routerLink]="['/tenants', tenant.id, 'edit']" class="btn btn-warning ml-2">Edit</a>
+    }
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (!loading && tenant) {
+  <div class="card card-outline card-info">
+    <div class="card-header">
+      <h3 class="card-title">{{ tenant.displayName }}</h3>
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-3">External ID</dt>
+        <dd class="col-sm-9">{{ tenant.externalPartyId || '—' }}</dd>
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">{{ tenant.email || '—' }}</dd>
+        <dt class="col-sm-3">Phone</dt>
+        <dd class="col-sm-9">{{ tenant.phone || '—' }}</dd>
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">{{ tenant.status || '—' }}</dd>
+        <dt class="col-sm-3">Updated</dt>
+        <dd class="col-sm-9">{{ tenant.updatedAt | date: 'medium' }}</dd>
+      </dl>
+    </div>
+  </div>
+}

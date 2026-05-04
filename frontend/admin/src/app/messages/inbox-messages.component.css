@@ -1,0 +1,38 @@
+.text-pre-wrap {
+  white-space: pre-wrap;
+}
+
+.message-item {
+  padding: 0.85rem 1rem;
+}
+
+.message-main {
+  min-width: 0;
+}
+
+.message-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.message-body {
+  color: #343a40;
+}
+
+.message-unread {
+  background: #f8fbff;
+  border-left: 3px solid #007bff;
+}
+
+.unread-dot {
+  display: none;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #007bff;
+  flex: 0 0 auto;
+}
+
+.message-unread .unread-dot {
+  display: inline-block;
+}

@@ -1,0 +1,83 @@
+<div class="row mb-3">
+  <div class="col">
+    <h1 class="m-0">Users</h1>
+  </div>
+  <div class="col-auto">
+    <a routerLink="/users/new" class="btn btn-primary">New user</a>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-6">
+    <div class="input-group">
+      <input type="text" class="form-control" [(ngModel)]="search" placeholder="Search username, email, name…" />
+      <div class="input-group-append">
+        <button type="button" class="btn btn-default" (click)="load()">Search</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (deleteError) {
+  <div class="alert alert-warning">{{ deleteError }}</div>
+}
+
+@if (!loading && !errorMessage) {
+  <div class="card">
+    <div class="card-body p-0 table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Enabled</th>
+            <th>Role(s)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of rows; track u.id) {
+            <tr>
+              <td><strong>{{ u.username }}</strong></td>
+              <td>{{ u.email || '—' }}</td>
+              <td>{{ (u.firstName || '') + ' ' + (u.lastName || '') }}</td>
+              <td>{{ u.enabled ? 'Yes' : 'No' }}</td>
+              <td>
+                @if (!u.realmRoles || u.realmRoles.length === 0) {
+                  <span class="text-muted">—</span>
+                } @else {
+                  @for (r of u.realmRoles; track r) {
+                    <span class="badge badge-pill badge-light border mr-1 mb-1" [title]="r">{{ r }}</span>
+                  }
+                }
+              </td>
+              <td class="text-nowrap">
+                <a [routerLink]="['/users', u.id, 'edit']" class="btn btn-sm btn-default mr-1">Edit</a>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger"
+                  [disabled]="deletingId === u.id"
+                  (click)="deleteUser(u)"
+                >
+                  {{ deletingId === u.id ? 'Deleting…' : 'Delete' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (rows.length === 0) {
+        <p class="p-3 text-muted mb-0">No users match this search.</p>
+      }
+    </div>
+  </div>
+}

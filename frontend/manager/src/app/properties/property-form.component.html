@@ -1,0 +1,163 @@
+<div class="row mb-3">
+  <div class="col-sm-6">
+    <h1 class="m-0">{{ isEdit ? 'Edit property' : 'New property' }}</h1>
+  </div>
+  <div class="col-sm-6 text-right">
+    <a routerLink="/properties" class="btn btn-default">Back to list</a>
+  </div>
+</div>
+
+@if (loadError) {
+  <div class="alert alert-danger">{{ loadError }}</div>
+}
+
+@if (!loadError) {
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+
+  <div class="card card-primary card-outline">
+    <div class="card-header">
+      <h3 class="card-title">Property details</h3>
+    </div>
+    <form class="card-body" [formGroup]="propertyForm" (ngSubmit)="saveProperty()">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="form-control" formControlName="name" placeholder="Sunset Residences" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Type</label>
+            <select class="form-control" formControlName="propertyType">
+              @for (type of propertyTypes; track type) {
+                <option [value]="type">{{ formatEnum(type) }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Address line 1</label>
+            <input type="text" class="form-control" formControlName="addressLine1" />
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Address line 2</label>
+            <input type="text" class="form-control" formControlName="addressLine2" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" class="form-control" formControlName="city" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>State / province</label>
+            <input type="text" class="form-control" formControlName="stateOrProvince" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Postal code</label>
+            <input type="text" class="form-control" formControlName="postalCode" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" class="form-control" formControlName="country" />
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" formControlName="description" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="m-0">Ownership</h4>
+        <button type="button" class="btn btn-sm btn-secondary" (click)="addOwnership()">Add owner</button>
+      </div>
+
+      <div class="border rounded p-3 mb-3" formArrayName="ownerships">
+        @for (ownership of ownerships.controls; track $index; let i = $index) {
+          <div class="mb-4 pb-3 border-bottom" [formGroupName]="i">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Ownership {{ i + 1 }}</strong>
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeOwnership(i)">Remove</button>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Owner party ID</label>
+                  <input type="text" class="form-control" formControlName="ownerPartyId" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Role</label>
+                  <select class="form-control" formControlName="role">
+                    @for (role of ownershipRoles; track role) {
+                      <option [value]="role">{{ formatEnum(role) }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Ownership %</label>
+                  <input type="number" class="form-control" formControlName="ownershipPercentage" min="0" max="100" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Effective from</label>
+                  <input type="date" class="form-control" formControlName="effectiveFrom" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Effective to</label>
+                  <input type="date" class="form-control" formControlName="effectiveTo" />
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Notes</label>
+                  <textarea class="form-control" formControlName="notes" rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" [disabled]="saveInFlight">
+          {{ saveInFlight ? 'Saving…' : 'Save property' }}
+        </button>
+        @if (isEdit) {
+          <button
+            type="button"
+            class="btn btn-danger ml-2"
+            [disabled]="deleteInFlight"
+            (click)="deleteProperty()"
+          >
+            {{ deleteInFlight ? 'Deleting…' : 'Delete' }}
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+}

@@ -1,0 +1,64 @@
+<div class="card card-outline card-secondary">
+  <div class="card-header">
+    <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+      <div class="d-flex align-items-center flex-wrap gap-2">
+        <h3 class="card-title mb-0">Messages</h3>&nbsp; 
+        <span class="badge badge-secondary" [title]="unreadCount + ' unread'">
+          {{ unreadCount }} unread
+        </span>
+      </div>
+      <div class="btn-group">
+        <a routerLink="/notifications" class="btn btn-sm btn-primary">
+          <i class="fas fa-bullhorn mr-1"></i>
+          Broadcast
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="load(false)" [disabled]="loading">
+          <i class="fas fa-sync-alt mr-1"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+    @if (loading) {
+      <p class="text-muted">Loading…</p>
+    } @else if (rows.length === 0) {
+      <p class="text-muted">No messages yet.</p>
+    } @else {
+      <div class="list-group list-group-flush">
+        @for (n of rows; track n.id) {
+          <div class="list-group-item message-item" [class.message-unread]="!n.readAt">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div class="message-main">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="unread-dot" aria-hidden="true"></span>
+                  <h5 class="mb-0 message-title">{{ n.title }}</h5>
+                  @if (!n.readAt) {
+                    <span class="badge badge-info">New</span>
+                  }
+                </div>
+                <p class="mb-1 text-pre-wrap message-body">{{ n.body }}</p>
+                <small class="text-muted">
+                  <i class="far fa-clock mr-1"></i>
+                  {{ n.createdAt | date: 'medium' }}
+                </small>
+              </div>
+              @if (!n.readAt) {
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-primary"
+                  (click)="markRead(n)"
+                  [disabled]="markingId === n.id"
+                >
+                  {{ markingId === n.id ? '…' : 'Mark read' }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
